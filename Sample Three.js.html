@@ -34,6 +34,10 @@
                 window.setTimeout(callback, 1000 / 60);
               };
     })();
+
+  // ratio of errors
+  var ERRORS = 0.05;
+
 	// set the scene size
 	var WIDTH = 900,
 	    HEIGHT = 400;
@@ -72,7 +76,6 @@
 	var particleCount = 10000,
 	    particles = new THREE.Geometry(),
 		pMaterial = new THREE.ParticleBasicMaterial({
-                        color: 0xAAFF00,
 			size: 10,
 			map: THREE.ImageUtils.loadTexture(
 				"images/particle.png"
@@ -80,7 +83,7 @@
 			blending: THREE.NormalBlending,
 			transparent: true
 		});
-	
+var colors = [];
 
         function normalDistribution() {
           return ((Math.random() + Math.random() + Math.random() + Math.random() + Math.random() + Math.random()) - 3) / 3
@@ -91,9 +94,9 @@
 	
 		// create a particle with random
 		// position values, -250 -> 250
-		var pX = -200,
-			pY = normalDistribution() * 100 - 100,
-			pZ = normalDistribution() * 100 - 100,
+		var pX = -300,
+			pY = normalDistribution() * 100,
+			pZ = normalDistribution() * 100,
 		    particle = new THREE.Vertex(
 				new THREE.Vector3(pX, pY, pZ)
 			);
@@ -105,8 +108,10 @@
 
 		// add it to the geometry
 		particles.vertices.push(particle);
+
+    colors[p] = new THREE.Color(0x0000FF);
 	}
-	
+
 	// create the particle system
 	var particleSystem = new THREE.ParticleSystem(
 		particles,
@@ -130,7 +135,6 @@
 			// get the particle
 			var particle = particles.vertices[pCount];
 			
-particle.material.color.setHex( 0xff0000 );
 
 			// check if we need to reset
 			if(particle.position.x > 400) {
@@ -144,13 +148,18 @@ particle.material.color.setHex( 0xff0000 );
 			// and the position
 			particle.position.addSelf(
 				particle.velocity);
+
+      if(Math.random < ERRORS) {
+        colors[pCount] = new THREE.Color(0x000000);
+      }
+    colors[p] = new THREE.Color(0x0000FF);
 		}
-		
+
 		// flag to the particle system that we've
 		// changed its vertices. This is the
 		// dirty little secret.
 		particleSystem.geometry.__dirtyVertices = true;
-		
+		 particleSystem.rotation.x += 0.01;
 		renderer.render(scene, camera);
 		
 		// set up the next call
