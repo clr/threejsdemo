@@ -1,209 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>three.js webgl - particles - billboards - colors</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<style>
-			body {
-				background-color: #ffffff;
-				margin: 0px;
-				overflow: hidden;
-				font-family:Monospace;
-				font-size:13px;
-				text-align:center;
-				font-weight: bold;
-				text-align:center;
-			}
-
-			a {
-				color:#0078ff;
-			}
-
-			#info {
-				color:#fff;
-				position: absolute;
-				top: 0px; width: 100%;
-				padding: 5px;
-				z-index:100;
-			}
-
-		</style>
-	</head>
-	<body>
-
-		<script src="demo/three.min.js"></script>
-
-		<script src="demo/Detector.js"></script>
-
-		<script>
-
-			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-
-			var container;
-			var camera, scene, renderer, particles, geometry, material, i, h, color, colors = [], sprite, size;
-			var mouseX = 0, mouseY = 0;
-
-			var windowHalfX = window.innerWidth / 2;
-			var windowHalfY = window.innerHeight / 2;
-
-			init();
-			animate();
-
-        function normalDistribution() {
-          return ((Math.random() + Math.random() + Math.random() + Math.random() + Math.random() + Math.random()) - 3) / 3
-        }
-
-			function init() {
-
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
-
-				camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight, 1, 3000 );
-				camera.position.z = 1400;
-
-				scene = new THREE.Scene();
-//				scene.fog = new THREE.FogExp2( 0xFFFFFF, 0.0009 );
-
-				geometry = new THREE.Geometry();
-
-				sprite = THREE.ImageUtils.loadTexture( "demo/particle.light.png" );
-
-				for ( i = 0; i < 1000; i++ ) {
-
-					var vertex = new THREE.Vector3();
-					vertex.x = -800;
-					vertex.y = normalDistribution() * 150;
-					vertex.z = normalDistribution() * 150;
-
-          vertex.velocity = new THREE.Vector3( -10 * Math.random(), 0, 0);
-
-					geometry.vertices.push( vertex );
-
-          if(Math.random() < 0.05) {
-            colors[i] = new THREE.Color();
-            colors[ i ].setHSL(1, 1, 0.5)
-          } else {
-            colors[i] = new THREE.Color();
-            colors[ i ].setHSL(0.15, 1, 0.5)
-          }
-
-				}
-
-				geometry.colors = colors;
-
-				material = new THREE.PointCloudMaterial( { size: 25, map: sprite, vertexColors: THREE.VertexColors, alphaTest: 0.2, transparent: true } );
-        material.color.setHSL( 0.15, 1, 0.5 );
-
-				particles = new THREE.PointCloud( geometry, material );
-				scene.add( particles );
-
-				//
-
-				renderer = new THREE.WebGLRenderer();
-        renderer.setClearColor(new THREE.Color(0xffffff));
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
-				container.appendChild( renderer.domElement );
-
-				//
-
-
-				document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
-				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
-
-				window.addEventListener( 'resize', onWindowResize, false );
-
-			}
-
-
-			function onDocumentMouseMove( event ) {
-
-				mouseX = event.clientX - windowHalfX;
-				mouseY = event.clientY - windowHalfY;
-
-			}
-
-			function onDocumentTouchStart( event ) {
-
-				if ( event.touches.length === 1 ) {
-
-					event.preventDefault();
-
-					mouseX = event.touches[ 0 ].pageX - windowHalfX;
-					mouseY = event.touches[ 0 ].pageY - windowHalfY;
-
-				}
-
-			}
-
-			function onDocumentTouchMove( event ) {
-
-				if ( event.touches.length === 1 ) {
-
-					event.preventDefault();
-
-					mouseX = event.touches[ 0 ].pageX - windowHalfX;
-					mouseY = event.touches[ 0 ].pageY - windowHalfY;
-
-				}
-
-			}
-
-			function onWindowResize( event ) {
-
-				windowHalfX = window.innerWidth / 2;
-				windowHalfY = window.innerHeight / 2;
-
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
-
-				renderer.setSize( window.innerWidth, window.innerHeight );
-
-			}
-
-			//
-
-			function animate() {
-        var i = 1000;
-        while(i--) {
-          var vertex = geometry.vertices[i];
-console.log(vertex);
-          if(vertex.x > 800) {
-            vertex.x = -800;
-            vertex.velocity.x = 0;
-          }
-
-          vertex.velocity.x -= Math.random() * -0.1;
-
-          vertex.position.addSelf(vertex.velocity);
-        }
-
-        geometry.verticesNeedUpdate = true;
-
-				requestAnimationFrame( animate );
-
-				render();
-
-			}
-
-			function render() {
-
-				var time = Date.now() * 0.00005;
-
-				camera.position.x += ( mouseX - camera.position.x ) * 0.05;
-				camera.position.y += ( - mouseY - camera.position.y ) * 0.05;
-
-				camera.lookAt( scene.position );
-
-//				h = ( 360 * ( 1.0 + time ) % 360 ) / 360;
-//				material.color.setHSL( h, 1.0, 0.6 );
-
-				renderer.render( scene, camera );
-
-			}
-
-		</script>
-	</body>
+<head>
+<title>three.js webgl - particles - billboards - colors</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<style>
+body {
+  background-color: #ffffff;
+margin: 0px;
+overflow: hidden;
+          font-family:Monospace;
+          font-size:13px;
+          text-align:center;
+          font-weight: bold;
+          text-align:center;
+}
+
+a {
+color:#0078ff;
+}
+
+#info {
+color:#fff;
+position: absolute;
+top: 0px; width: 100%;
+padding: 5px;
+         z-index:100;
+}
+
+</style>
+</head>
+<body>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script type="x-shader/x-vertex" id="vertexshader">
+
+attribute float alpha;
+varying float vAlpha;
+varying vec3 vColor;
+
+void main() {
+  vColor = color;
+  vAlpha = alpha;
+
+  vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+
+  gl_PointSize = 4.0;
+  gl_Position = projectionMatrix * mvPosition;
+}
+</script>
+
+<script type="x-shader/x-fragment" id="fragmentshader">
+
+varying float vAlpha;
+varying vec3 vColor;
+
+void main() {
+  gl_FragColor = vec4( vColor, vAlpha );
+}
+</script>
+
+<script src="demo/three.min.js"></script>
+
+<script src="demo/Detector.js"></script>
+
+<script>
+
+if(!Detector.webgl) Detector.addGetWebGLMessage();
+
+var container;
+var camera, scene, renderer, particles;
+
+var windowHalfX = window.innerWidth / 2;
+var windowHalfY = window.innerHeight / 2;
+
+init();
+animate();
+
+// This is a helper function to make the distribution look more natural.  Er, normal.  ;-)
+function normalDistribution() {
+  return ((Math.random() + Math.random() + Math.random() + Math.random() + Math.random() + Math.random()) - 3) / 3;
+}
+
+function init() {
+  container = document.createElement('div');
+  document.body.appendChild(container);
+
+  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 3000);
+  camera.position.z = 1400;
+
+  scene = new THREE.Scene();
+
+  var particles = createParticleTube(5000);
+  scene.add(particles);
+
+  // Make the cylindar end-cap shapes.
+  addCylinders(scene);
+
+  renderer = new THREE.WebGLRenderer();
+  renderer.setClearColor(new THREE.Color(0xffffff));
+  renderer.setPixelRatio( window.devicePixelRatio );
+  renderer.setSize( window.innerWidth, window.innerHeight - 100 );
+  container.appendChild( renderer.domElement );
+
+  window.addEventListener( 'resize', onWindowResize, false );
+}
+
+function createParticleTube(count){
+  var geometry = new THREE.Geometry();
+  var colors = [];
+
+  for(var i = 0; i < count; i++){
+    var vertex = new THREE.Vector3();
+    vertex.x = Math.random() * 1600 - 800;
+    vertex.y = normalDistribution() * 150;
+    vertex.z = normalDistribution() * 150;
+    vertex.velocity = 0;
+
+    geometry.vertices.push( vertex );
+  }
+  geometry.colors = [];
+
+  // point cloud material
+  // attributes
+  var attributes = {
+    alpha: { type: 'f', value: [] },
+    color: { type: 'c', value: new THREE.Color(0x33ccff) },
+  };
+  // uniforms
+  var uniforms = {
+  };
+
+  var shaderMaterial = new THREE.ShaderMaterial( {
+    uniforms:       uniforms,
+    attributes:     attributes,
+    vertexShader:   document.getElementById( 'vertexshader' ).textContent,
+    vertexColors:   THREE.VertexColors,
+    fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
+    transparent:    true
+  });
+
+  particles = new THREE.PointCloud(geometry, shaderMaterial);
+
+  for(var i = 0; i < geometry.vertices.length; i++){
+    if(Math.random() < 0.2){
+      attributes.alpha.value[i] = 1;
+    } else {
+      attributes.alpha.value[i] = 0;
+    }
+    colors[i] = new THREE.Color(0x33ccff);
+  }
+  geometry.colors = colors;
+
+  return particles;
+}
+
+function addCylinders(scene){
+  var cgeometry = new THREE.CylinderGeometry( 150, 150, 20, 64 );
+  var material = new THREE.MeshBasicMaterial( {color: 0x99999f} );
+  var wireframeMaterial = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, transparent: true } ); 
+  var multiMaterial = [ material, wireframeMaterial ];
+
+  var c1 = THREE.SceneUtils.createMultiMaterialObject(cgeometry, multiMaterial);
+  c1.position.set(-800, 0, 0);
+  c1.rotation.set(0, 0, Math.PI / 2);
+
+  var c2 = c1.clone();
+  c2.position.set(800,0,0);
+
+  scene.add(c1);
+  scene.add(c2);
+}
+
+function onWindowResize(event) {
+  windowHalfX = window.innerWidth / 2;
+  windowHalfY = window.innerHeight / 2;
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize( window.innerWidth, window.innerHeight );
+}
+
+function animate() {
+  requestAnimationFrame( animate );
+  render();
+}
+
+function render() {
+  var volume = parseFloat($("#amount").slider("value"));
+  var errors = parseFloat($("#errors").slider("value"));
+  var latency = parseFloat($("#latency").slider("value")) / 5;
+
+  for(var i = 0; i < particles.geometry.vertices.length; i++) {
+    var v = particles.geometry.vertices[i];
+    diff = (Math.random() / Math.pow(latency, 2));
+    if(!isNaN(diff)){
+      v.velocity += diff;
+    }
+    if(v.velocity > 12){v.velocity = 11.8}
+    v.x += v.velocity;
+
+    // Start a new particle's journey.
+    if(v.x > 800){
+      v.x = -800;
+      v.velocity = 0;
+      // decide if this vertex is visible
+      if((volume / 5000) < Math.random()){
+        //hide it
+        particles.material.attributes.alpha.value[i] = 0;
+      } else {
+        //show it
+        particles.material.attributes.alpha.value[i] = 1;
+      }
+      // decide if this vertex is an error
+      if((errors / 100) > Math.random()){
+        //error
+        particles.geometry.colors[i] = new THREE.Color(0xff3300) ;
+      } else {
+        //normal
+        particles.geometry.colors[i] = new THREE.Color(0x33ccff) ;
+      }
+    }
+  }
+  particles.material.attributes.alpha.needsUpdate = true;
+  particles.geometry.colorsNeedUpdate = true;
+  particles.geometry.verticesNeedUpdate = true;
+  particles.rotation.x += 0.01;
+
+  renderer.render(scene, camera);
+}
+
+$(function() {
+  $("#amount").slider({
+    max: 5000,
+    min: 1000
+  });
+});
+$(function() {
+  $("#errors").slider({
+    max: 100,
+    min: 0
+  });
+});
+$(function() {
+  $("#latency").slider({
+    max: 100,
+    min: 10,
+    value: 1
+  });
+});
+</script>
+<div>volume: <div id="amount"></div></div>
+<div>errors: <div id="errors"></div></div>
+<div>latency: <div id="latency"></div></div>
+</body>
 </html>
